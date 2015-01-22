@@ -25,7 +25,7 @@ var xhr1 = getXMLHttpRequest();
 xhr1.onreadystatechange = function() {
         if (xhr1.readyState == 4 && (xhr1.status == 200 || xhr1.status == 0)) {
         var temp = eval(xhr1.responseText);
-		document.getElementById(sonde).innerHTML=temp[0];
+		document.getElementById(sonde).innerHTML=temp[0]+'°C';
 		document.getElementById(sonde).style.fontWeight = 'bold';
 }};
 
@@ -40,12 +40,13 @@ setTimeout(function(){polltemp(sonde)},15000);
 <?php
 $xml = simplexml_load_file('conf.xml');
 if ($xml) {
-echo "<body onLoad=\"";
-foreach ($xml->sonde as $xmlsonde){
-echo "polltemp('" . $xmlsonde->serial . "');";
-}
-echo "\">";
-}
+	
+	if ($xml->sonde) {
+	echo "<body onLoad=\"";
+		foreach ($xml->sonde as $xmlsonde){
+			echo "polltemp('" . $xmlsonde->serial . "');";
+		}
+	echo "\">";
 ?>
 
 <?php
@@ -55,20 +56,33 @@ include("menu.php" );
 <div style="clear:both;margin-left:3%">
 <br>
 <div style="padding-top:10px;float:left;">
-<img style="width:50px;height:50px;" src="images/meteo/50/temp.png">
+<img style="width:50px;height:50px;" src="images/temp.png">
 </div>
 <div style="line-height: 1.4;font-size:12px;padding-top:10px;margin-left:100px">
 <?
-if ($xml) {
+
 foreach ($xml->sonde as $xmlsonde){
 echo "Température ". $xmlsonde->name . " : <span id=" . $xmlsonde->serial . "><b>Polling...</b></span><br>";
 }
-}
+
 ?>
 </div>
 <div style="clear:both;padding-top:10px;">
 <hr style="width:82%;height:2px;" /> 
 </div>
+<?
+	}else {
+?>
+<body>
+<?php
+$page = 'Accueil';
+include("menu.php" );
+?>
+<div style="clear:both;margin-left:3%">
+<?
+	}
+}
+?>
 
 <table style="width:30%;clear:both;float:left;" class="tableaurelais">
 <tr><th>Equipements</th><th>Actions</th><th>Equipements</th><th>Actions</th></tr>
