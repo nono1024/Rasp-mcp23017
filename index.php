@@ -15,8 +15,33 @@
 <script src="js/jquery.min.js"></script>
 <script src="js/xhr.js"></script>
 <link rel="stylesheet" href="css/style.css">
-
+<?
+$dom = simplexml_load_file('pin.xml');
+if ($dom) {
+$refreshpin = "refreshpin";
+$refreshpin = $dom->$refreshpin;
+$refreshpin = $refreshpin . "000";
+}
+?>
 <script type="text/javascript">
+
+function pollpin() {
+
+var xhr1 = getXMLHttpRequest();
+
+xhr1.onreadystatechange = function() {
+        if (xhr1.readyState == 4 && (xhr1.status == 200 || xhr1.status == 0)) {
+        JSON.parse(xhr1.responseText, function (k, v) {
+		if (k != ""){
+		document.getElementById(k).className = 'pinState ' + (v=='1'?'on':'off');
+		}});
+}};
+
+xhr1.open("GET", "scripts/poll-pin.php", true);
+xhr1.send(null);
+
+setTimeout(function(){pollpin()},<?echo $refreshpin;?>);
+}
 
 function polltemp(sonde) {
 
@@ -42,7 +67,7 @@ $xml = simplexml_load_file('conf.xml');
 if ($xml) {
 	
 	if ($xml->sonde) {
-	echo "<body onLoad=\"";
+	echo "<body onLoad=\"pollpin();";
 		foreach ($xml->sonde as $xmlsonde){
 			echo "polltemp('" . $xmlsonde->serial . "');";
 		}
@@ -73,7 +98,7 @@ echo "Température ". $xmlsonde->name . " : <span id=" . $xmlsonde->serial . "><
 <?
 	}else {
 ?>
-<body>
+<body onLoad="pollpin();">
 <?php
 $page = 'Accueil';
 include("menu.php" );
@@ -87,7 +112,6 @@ include("menu.php" );
 <table style="width:30%;clear:both;float:left;" class="tableaurelais">
 <tr><th>Equipements</th><th>Actions</th><th>Equipements</th><th>Actions</th></tr>
 <?php 
-$dom = simplexml_load_file('pin.xml');
 if ($dom) {
 $numpin = "NumberOfPin";
 $numpin = $dom->$numpin;
@@ -117,6 +141,11 @@ for($i = 0; $i <= $numpin; $i++){
 		<div class="action" id="off" onclick="changestate('<?php echo $letter.$i; ?>',0)">
 			<span>Off</span>
 		</div>
+	</td>
+	
+<?php }elseif ($pintype[$i] == 'entree') {?>
+	<td style="min-width:180px;width:10%;" >
+	<span><-- Status</span>
 	</td>
 	
 <?php }

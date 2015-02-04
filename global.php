@@ -293,6 +293,14 @@ switch($_GET['action']){
 		$result['state'] = 1;
 		break;
 		
+	case 'change':
+		$type = $_GET['type'];
+		$dom->$type = $_GET['val'];
+		$dom->asXML("pin.xml");
+		$result['type'] = 'type' .$_GET['type'] .  ' set to '.$_GET['val'];
+		$result['state'] = 1;
+		break;
+		
 	case 'getstate':
 		if ($_GET['pin']{0} == 'A') { 
 		$silent = exec('/usr/sbin/i2cget -y 1 0x20 0x12');

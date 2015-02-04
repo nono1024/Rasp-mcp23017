@@ -82,16 +82,19 @@ background-color:grey;
 	float:left;
 	width:50%;
 	margin:10px auto 0 auto;
+
 }
 
 .tableaurelais tr{
 	border-bottom:1px solid #cecece;
 	vertical-align:middle;
+
 }
 
 .tableaurelais tr th{
 	background-color:#3d3d3d;
 	border-color:grey;
+
 	color:white;
 	vertical-align:middle;
 	background: -webkit-linear-gradient( #555, #2C2C2C); 
@@ -113,7 +116,6 @@ background-color:grey;
 	background: #444; 
 	color:white;
 	font-weight: bold;
-	
 background: -webkit-linear-gradient( #555, #2C2C2C); 
 background: -moz-linear-gradient( #555, #2C2C2C); 
 background: -ms-linear-gradient( #555, #2C2C2C); 
@@ -191,6 +193,22 @@ background: -ms-linear-gradient( #555, #2C2C2C);
 background: -o-linear-gradient( #555, #2C2C2C); 
 background: linear-gradient( #555, #2C2C2C); 
 box-shadow: 1px 1px 10px black inset, 0 1px 0 rgba( 255, 255, 255, 0.4); 
+}
+
+.input {
+margin-top:3px;
+padding-left:5px;
+ color: black; 
+ background: #DBDBDB; 
+ text-shadow: 0px 1px 0px rgba( 255, 255, 255, 0.2);
+box-shadow: 0 0 5px rgba( 0, 0, 0, 0.5), 
+				0 -1px 0 rgba( 255, 255, 255, 0.4);
+border-radius:5px;
+ background: -webkit-linear-gradient( #FCFCFC, #D3D3D3); 
+ background: -moz-linear-gradient( #FCFCFC, #D3D3D3); 
+ background: -ms-linear-gradient( #FCFCFC, #D3D3D3); 
+ background: -o-linear-gradient( #FCFCFC, #D3D3D3); 
+ background: linear-gradient( #FCFCFC, #D3D3D3);
 }
 
 /* ===============

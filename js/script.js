@@ -59,6 +59,16 @@ function changename(pin){
 		 }});
 }
 
+function change(type){
+	var val = document.getElementById(type).value;
+	$.ajax({
+			type: "GET",
+			  url: "./global.php?action=change&type=" + type + "&val=" + val,
+			success: function(r){
+			
+		 }});
+}
+
 function savesonde(serial,familyid){
 	var name = document.getElementById('name'+serial).value;
 	$.ajax({

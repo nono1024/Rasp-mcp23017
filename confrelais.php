@@ -18,13 +18,23 @@
 <?php
 $page = 'Advanced';
 include("menu.php" );
+
+$dom = simplexml_load_file('pin.xml');
+if ($dom) {
+$refreshpin = "refreshpin";
+$refreshpin = $dom->$refreshpin;
 ?>
+<div style="clear:both;margin-left:3%">
+	<span style="margin-top:0px;float:left;">Délai de mise à jour Status Pin (Page Accueil) &nbsp</span>
+	<input class="input" style="margin-top:0px;float:left;width:28px;" id="refreshpin" value="<?php echo $refreshpin; ?>"></input>
+	<span style="margin-top:0px;float:left;">&nbspSecondes</span>
+	<div style="width:40px;float:left;height:20px;padding:3px;padding-left:10px;" class="action" id="name" onclick="change('refreshpin')">Save
+	</div>
+</div>
 <div style="clear:both;margin-left:3%">
 <table class="tableaurelais">
 <tr><th>Nom</th><th>Pin</th><th>Type</th><th>Link</th></tr>
 <?php 
-$dom = simplexml_load_file('pin.xml');
-if ($dom) {
 $numpin = "NumberOfPin";
 $numpin = $dom->$numpin;
 for($j=0; $j<=1;$j++){
@@ -43,14 +53,19 @@ for($i = 0; $i <= $numpin; $i++){
 		$piecelinked = explode(";", $pinlinked);
 		if ($pintype[$i] == 'fugitif') {
 		$pinother[$i] = 'onoff';
+		$pinother2[$i] = 'entree';
 		}elseif ($pintype[$i] == 'onoff') {
 		$pinother[$i] = 'fugitif';
+		$pinother2[$i] = 'entree';
+		}elseif ($pintype[$i] == 'entree') {
+		$pinother[$i] = 'fugitif';
+		$pinother2[$i] = 'onoff';
 		}
 
 ?>
 <tr>
 	<td style="min-width:290px;width:10%;">
-		<input id="name<?php echo $letter.$i; ?>" value="<?php echo $pinname[$i]; ?>"></input>
+		<input id="name<?php echo $letter.$i; ?>" value="<?php echo $pinname[$i]; ?>" class="input"></input>
 		<div style="float:right" class="action" id="name" onclick="changename('<?php echo $letter.$i; ?>')">Save
 		</div>
 	</td>
@@ -58,9 +73,10 @@ for($i = 0; $i <= $numpin; $i++){
 		<?php echo $letter.$i;?>
 	</td>
 	<td style="min-width:100px;width:10%;">
-	<select id="selectortype<?php echo $letter.$i;?>" name="selectortype<?php echo $letter.$i;?>" style="" onchange="changetype('<?php echo $letter.$i; ?>')">
+	<select id="selectortype<?php echo $letter.$i;?>" name="selectortype<?php echo $letter.$i;?>" class="input" onchange="changetype('<?php echo $letter.$i; ?>')">
         <option value="<?php echo $pintype[$i]; ?>"><?php echo $pintype[$i]; ?></option>
         <option value="<?php echo $pinother[$i]; ?>"><?php echo $pinother[$i]; ?></option>
+		<option value="<?php echo $pinother2[$i]; ?>"><?php echo $pinother2[$i]; ?></option>
 	</select>
 	</td>
 	<td style="min-width:600px;width:10%;">
