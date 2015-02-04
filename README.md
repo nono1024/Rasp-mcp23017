@@ -5,3 +5,5 @@ This code is use to control MCP23017 connected to a Pi.
 I use it only for output and relay control.
 
 See http://domoraspi.leotic.fr/ for Raspberry Pi configuration and Hardware map.
+
+I will add input possibility in the futur
