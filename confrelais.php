@@ -28,7 +28,7 @@ $refreshpin = $dom->$refreshpin;
 	<span style="margin-top:0px;float:left;">Délai de mise à jour Status Pin (Page Accueil) &nbsp</span>
 	<input class="input" style="margin-top:0px;float:left;width:28px;" id="refreshpin" value="<?php echo $refreshpin; ?>"></input>
 	<span style="margin-top:0px;float:left;">&nbspSecondes</span>
-	<div style="width:40px;float:left;height:20px;padding:3px;padding-left:10px;" class="action" id="name" onclick="change('refreshpin')">Save
+	<div style="color:white;width:40px;float:left;height:20px;padding:3px;padding-left:10px;" class="action" id="name" onclick="change('refreshpin')">Save
 	</div>
 </div>
 <div style="clear:both;margin-left:3%">

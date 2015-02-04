@@ -99,7 +99,7 @@ foreach ($output as $sondex) {
 		<?
 			}else {
 		?>
-		<input style="float:left;" id="name<?php echo $sonde[$a];?>" value="<?php echo $sonde[$a]; ?>"></input>
+		<input style="float:left;" id="name<?php echo $sonde[$a];?>" value="<?php echo $sonde[$a];?>" class="input" ></input>
 		<div class="action" style="min-width:100px;width:100px;float:left;" onclick="savesonde('<?php echo $sonde[$a]; ?>','<?php echo $familyid[$a];?>')">
 		<span>Sauvegarder</span>
 		</div>
@@ -134,8 +134,8 @@ foreach ($output as $sondex) {
 if ($xml) {
 foreach ($xml->sonde as $xmlsonde){
 ?>
-	<td style="min-width:200px;width:12%;">
-		<input style="float:left;" id="sonde<?php echo $xmlsonde->serial;?>" value="<?php echo $xmlsonde->name; ?>"></input>
+	<td style="min-width:220px;width:12%;">
+		<input class="input"  style="float:left;" id="sonde<?php echo $xmlsonde->serial;?>" value="<?php echo $xmlsonde->name; ?>"></input>
 		<div class="action" style="min-width:60px;width:60px;float:left;" onclick="savesondename('<?php echo $xmlsonde->serial;?>','<?php echo $xmlsonde->name;?>')">
 		<span>Save</span>
 		</div>
