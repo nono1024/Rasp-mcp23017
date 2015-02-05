@@ -124,7 +124,7 @@ for($i = 0; $i <= $numpin; $i++){
 		$chaine = "pin".$letter.$i;
 		$chaine2 = "name".$letter.$i;
 		$chaine3 = "type".$letter.$i;
-		$pinstatus[$i] = $dom->$chaine;
+		$pinstatus[$i] = $dom->pinstate->$chaine;
 		$pintrim[$i] = (trim($pinstatus[$i])=="1"?'on':'off');
 		$pinname[$i] = $dom->$chaine2;
 		$pintype[$i] = $dom->$chaine3;
@@ -153,7 +153,7 @@ $i++;
 		$chaine = "pin".$letter.$i;
 		$chaine2 = "name".$letter.$i;
 		$chaine3 = "type".$letter.$i;
-		$pinstatus[$i] = $dom->$chaine;
+		$pinstatus[$i] = $dom->pinstate->$chaine;
 		$pintrim[$i] = (trim($pinstatus[$i])=="1"?'on':'off');
 		$pinname[$i] = $dom->$chaine2;
 		$pintype[$i] = $dom->$chaine3;

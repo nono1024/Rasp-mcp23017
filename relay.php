@@ -14,6 +14,37 @@
 <script src="js/script.js"></script>
 <script src="js/jquery.min.js"></script>
 <link rel="stylesheet" href="css/style.css">
+
+<?
+$dom = simplexml_load_file('pin.xml');
+if ($dom) {
+$refreshpin = "refreshpin";
+$refreshpin = $dom->$refreshpin;
+$refreshpin = $refreshpin . "000";
+}
+?>
+<script type="text/javascript">
+
+function pollpin() {
+
+var xhr1 = getXMLHttpRequest();
+
+xhr1.onreadystatechange = function() {
+        if (xhr1.readyState == 4 && (xhr1.status == 200 || xhr1.status == 0)) {
+        JSON.parse(xhr1.responseText, function (k, v) {
+		if (k != ""){
+		document.getElementById(k).className = 'pinState ' + (v=='1'?'on':'off');
+		}});
+}};
+
+xhr1.open("GET", "scripts/poll-pin.php", true);
+xhr1.send(null);
+
+setTimeout(function(){pollpin()},<?echo $refreshpin;?>);
+}
+
+</script>
+
 <body>
 <?php
 $page = 'Relais';
@@ -23,7 +54,7 @@ include("menu.php" );
 <table class="tableaurelais">
 <tr><th>Nom</th><th>Pin</th><th>Etat</th><th>Actions</th><th>Type</th><th>Link</th></tr>
 <?php 
-$dom = simplexml_load_file('pin.xml');
+
 if ($dom) {
 $numpin = "NumberOfPin";
 $numpin = $dom->$numpin;
@@ -35,7 +66,7 @@ $letter='B';
 for($i = 0; $i <= $numpin; $i++){ 
 		$chaine = "pin".$letter.$i;
 		$chaine2 = "name".$letter.$i;
-		$pinstatus[$i] = $dom->$chaine;
+		$pinstatus[$i] = $dom->pinstate->$chaine;
 		$chaine3 = "type".$letter.$i;
 		$pintrim[$i] = (trim($pinstatus[$i])=="1"?'on':'off');
 		$pinname[$i] = $dom->$chaine2;
