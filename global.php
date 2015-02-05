@@ -19,11 +19,11 @@ $numpin = $dom->$numpin;
 	if ($dom) {	
 	for($i = numOfRegisterPins; $i >=  0; $i--){
 		$chaine = "pinA".$i;
-		$GLOBALS['registerA'][$i] = $dom->$chaine;
+		$GLOBALS['registerA'][$i] = $dom->pinstate->$chaine;
 	}
 	for($i = numOfRegisterPins; $i >=  0; $i--){
 		$chaine = "pinB".$i;
-		$GLOBALS['registerB'][$i] = $dom->$chaine;
+		$GLOBALS['registerB'][$i] = $dom->pinstate->$chaine;
 	}
 	}else {
 	echo "Erreur de fichier XML";
@@ -39,12 +39,12 @@ switch($_GET['action']){
 		//Relais bank A
 		for($i = numOfRegisterPins; $i >=  0; $i--){
 			$chaine = "pinA".$i;
-			$GLOBALS['registerA'][$i] = $dom->$chaine;
+			$GLOBALS['registerA'][$i] = $dom->pinstate->$chaine;
 		}
 		//Relais bank B
 		for($i = numOfRegisterPins; $i >=  0; $i--){
 			$chaine = "pinB".$i;
-			$GLOBALS['registerB'][$i] = $dom->$chaine;
+			$GLOBALS['registerB'][$i] = $dom->pinstate->$chaine;
 		}
 		//mets à jour les relais
 		writeRegisters();
@@ -59,13 +59,13 @@ switch($_GET['action']){
 		//Relais bank A Mise à zéeo
 		for($i = numOfRegisterPins; $i >=  0; $i--){
 			$chaine = "pinA".$i;
-			$dom->$chaine = '0';
+			$dom->pinstate->$chaine = '0';
 			$GLOBALS['registerA'][$i] = 0;
 		}
 		//Relais bank B Mise à zéro
 		for($i = numOfRegisterPins; $i >=  0; $i--){
 			$chaine = "pinB".$i;
-			$dom->$chaine = '0';
+			$dom->pinstate->$chaine = '0';
 			$GLOBALS['registerB'][$i] = 0;
 		}
 		//mets à jour les relais
@@ -84,13 +84,13 @@ switch($_GET['action']){
 		//Relais bank A Mise à zéro
 		for($i = numOfRegisterPins; $i >=  0; $i--){
 			$chaine = "pinA".$i;
-			$dom->$chaine = '0';
+			$dom->pinstate->$chaine = '0';
 			$GLOBALS['registerA'][$i] = 0;
 		}
 		//Relais bank B Mise à zéro
 		for($i = numOfRegisterPins; $i >=  0; $i--){
 			$chaine = "pinB".$i;
-			$dom->$chaine = '0';
+			$dom->pinstate->$chaine = '0';
 			$GLOBALS['registerB'][$i] = 0;
 		}
 		//mets à jour les relais
@@ -107,7 +107,7 @@ switch($_GET['action']){
 		//Relais bank A Mise à zéro
 		for($i = numOfRegisterPins; $i >=  0; $i--){
 			$chaine = "pinA".$i;
-			$dom->$chaine = '0';
+			$dom->$pinstate->chaine = '0';
 			$GLOBALS['registerA'][$i] = 0;
 		}
 		//mets à jour les relais
@@ -123,7 +123,7 @@ switch($_GET['action']){
 		//Relais bank B Mise à zéro
 		for($i = numOfRegisterPins; $i >=  0; $i--){
 			$chaine = "pinB".$i;
-			$dom->$chaine = '0';
+			$dom->pinstate->$chaine = '0';
 			$GLOBALS['registerB'][$i] = 0;
 		}
 		//mets à jour les relais
@@ -165,11 +165,11 @@ switch($_GET['action']){
 			foreach ($piecelink as $piece) {
 			//on recupere son status
 			$chainestatuslink = "pin".$piece;
-			$statuslink = $dom->$chainestatuslink;
+			$statuslink = $dom->pinstate->$chainestatuslink;
 			//Si il n'est pas allumé, on l'allume
 				if ($statuslink == '0') {
 				$GLOBALS['register'.$piece{0}][$piece{1}] = 1;
-				$dom->$chainestatuslink = 1;
+				$dom->pinstate->$chainestatuslink = 1;
 				$result['link'] = $piece . "," . $result['link'];
 				}			
 			}		
@@ -179,7 +179,7 @@ switch($_GET['action']){
 		//envoi la modif des pins
 		writeRegisters();
 		//Save Xml
-		$dom->$chaine = 1;
+		$dom->pinstate->$chaine = 1;
 		$dom->asXML("pin.xml");
 		//Json result
 		$result['type'] = 'ON' .$_GET['pin'] .  ' OK';
@@ -189,7 +189,7 @@ switch($_GET['action']){
 		}elseif ($status == 1) {
 		//met à jour la variable Pin
 		$GLOBALS['register'.$_GET['pin']{0}][$_GET['pin']{1}] = 0;
-		$dom->$chaine = 0;
+		$dom->pinstate->$chaine = 0;
 		if ($link) {
 		$result['link'] = "";
 		//On détaille les link
@@ -209,7 +209,7 @@ switch($_GET['action']){
 					if ($piece2 != $_GET['pin'] && $piece2) {
 						//on regarde leur status
 						$chainestatuslinked = "pin".$piece2;
-						$statuslinked = $dom->$chainestatuslinked;
+						$statuslinked = $dom->pinstate->$chainestatuslinked;
 							//Si un seul est allumé
 							if ($statuslinked == '1') {
 							//On met la variable à 1
@@ -223,7 +223,7 @@ switch($_GET['action']){
 				//on met à 0 le link
 				$GLOBALS['register'.$piece{0}][$piece{1}] = 0;
 				$chainestatuslink = "pin".$piece;
-				$dom->$chainestatuslink = 0;
+				$dom->pinstate->$chainestatuslink = 0;
 				$result['link'] = $piece . "," . $result['link'];
 				}
 			}		
@@ -378,7 +378,7 @@ switch($_GET['action']){
 	case 'fugitif':
 		$base = $_GET['pin']{0};
 		$chaine = "pin".$_GET['pin'];
-		$status = $dom->$chaine;
+		$status = $dom->pinstate->$chaine;
 		//Si on a un état forcé, on le force
 		if ($_GET['state'] == '1') {
 		$status = 0;
