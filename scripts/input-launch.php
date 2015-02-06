@@ -5,12 +5,11 @@ $state = $argv[2];
 $typepin = $argv[3];
 
 	if ($typepin == 'entree'){
+		$dom = simplexml_load_file('input.xml');
 		
 	}elseif ($typepin != 'entree') {
 		$url = "http://192.168.0.210/global.php?action=cs&pin=".$pin."&state=".$state;
 		$response = file_get_contents($url);
 		echo $response;
 	}
-
-
 ?>

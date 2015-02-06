@@ -1,7 +1,7 @@
 <?php
 //$timestart=microtime(true);
 //charge le fichier XML
-while (true) {
+//while (true) {
 $dom = simplexml_load_file('/var/www/pin.xml');
 if ($dom) {	
 $silent = exec('/usr/sbin/i2cget -y 1 0x20 0x12');
@@ -29,7 +29,7 @@ for($i = 7; $i >=  0; $i--){
 			if ($pinA{(7-$i)} != $xmlpinA[$i]) {
 			$chainetype = 'typeA' . $i;
 			$typepin = $dom->$chainetype;
-			$silent = exec('/usr/bin/php /var/www/scripts/input-launch.php A'.$i.' '.$pinA{7-$i}.' '.$typepin);
+			$silent = exec('/usr/bin/php /var/www/scripts/input-launch.php A'.$i.' '.$pinA{(7-$i)}.' '.$typepin);
 			echo $silent;
 			}
 		}
@@ -40,7 +40,7 @@ for($i = 7; $i >=  0; $i--){
 			if ($pinB{(7-$i)} != $xmlpinB[$i]) {
 			$chainetype = 'typeB' . $i;
 			$typepin = $dom->$chainetype;
-			$silent = exec('/usr/bin/php /var/www/scripts/input-launch.php B'.$i.' '.$pinB{7-$i}.' '.$typepin);
+			$silent = exec('/usr/bin/php /var/www/scripts/input-launch.php B'.$i.' '.$pinB{(7-$i)}.' '.$typepin);
 			echo $silent;
 			}
 		}
@@ -58,5 +58,5 @@ echo "<br>Script execute en " . $page_load_time . " sec";
 */
 $dom = "";
 usleep(300000);
-}
+//}
 ?>
