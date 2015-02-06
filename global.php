@@ -432,6 +432,12 @@ switch($_GET['action']){
 		$xml->asXML("conf.xml");
 	break;
 	
+	case 'changeinput':
+		$xml = simplexml_load_file('input.xml');
+		$xml->$_GET['pin']->$_GET['type'] = $_GET['url'];
+		$xml->asXML("input.xml");
+	break;
+	
 	case 'deletesonde':
 		$xml = new SimpleXMLElement('conf.xml', NULL, TRUE);
 		foreach($xml->sonde as $xmlsonde)

@@ -32,7 +32,7 @@ function changetype(pin){
 			type: "GET",
 			  url: "./global.php?action=changetype&pin=" + pin + "&type=" + type,
 			success: function(r){
-			
+			location.reload();
 		 }});
 }
 
@@ -44,6 +44,16 @@ operation = 'add';
 	$.ajax({
 			type: "GET",
 			  url: "./global.php?action=changelink&pin=" + pin + "&linked=" + linked + "&operation=" + operation,
+			success: function(r){
+			
+		 }});
+}
+
+function changeinput(pin,type){
+	var url = document.getElementById('input'+ type + pin).value;
+	$.ajax({
+			type: "GET",
+			  url: "./global.php?action=changeinput&pin=" + pin + "&type=" + type +"&url=" + url,
 			success: function(r){
 			
 		 }});

@@ -81,6 +81,7 @@ for($i = 0; $i <= $numpin; $i++){
 	</td>
 	<td style="min-width:600px;width:10%;">
 	<?php
+	if ($pintype[$i] != 'entree') { 
 		for($a=0; $a<=1;$a++){
 		$letter2='A';
 		if($a==1){
@@ -101,6 +102,20 @@ for($i = 0; $i <= $numpin; $i++){
 	<input type="checkbox" id="linked<?php echo $pins; ?><?php echo $letter2.$b; ?>" <?php echo $checked;?> onchange="changelink('<?php echo $pins; ?>','<?php echo $letter2.$b;?>')"><?php echo $letter2.$b; ?>
 	<?php
 		}}}
+		}else {
+		$inputxml = simplexml_load_file('input.xml');
+		$inputpin = $letter.$i;
+		$inputup = $inputxml->$inputpin->up;
+		$inputdown = $inputxml->$inputpin->down;
+		?>
+		<span style="float:left;clear:both;">Up : </span>
+		<input  style="margin-left:10px;width:480px;float:left;" id="inputup<?php echo $letter.$i;?>" value="<?php echo $inputup; ?>" class="input"></input>
+		<div style="margin-top:3px;width:40px;float:left;height:20px;padding:3px;float:right;" class="action" id="name" onclick="changeinput('<?php echo $letter.$i; ?>','up')">Save</div>
+		<span style="float:left;clear:both;">Down : </span>
+		<input style="margin-left:10px;width:458px;float:left;" id="inputdown<?php echo $letter.$i;?>" value="<?php echo $inputdown; ?>" class="input"></input>
+		<div style="margin-top:3px;width:40px;float:left;height:20px;padding:3px;float:right;" class="action" id="name" onclick="changeinput('<?php echo $letter.$i; ?>','down')">Save</div>
+		<?
+		}
 		?>
 	</td>
 </tr>
