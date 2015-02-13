@@ -329,27 +329,14 @@ switch($_GET['action']){
 		
 	case 'getstate':
 		if ($_GET['pin']{0} == 'A') { 
-		$silent = exec('/usr/sbin/i2cget -y 1 0x20 0x12');
+		$result['state'] = $GLOBALS['registerA'][$_GET['pin']{1}] ^ 0;
 		}else if ($_GET['pin']{0} == 'B') {
-		$silent = exec('/usr/sbin/i2cget -y 1 0x20 0x13');
+		$result['state'] = $GLOBALS['registerB'][$_GET['pin']{1}] ^ 0;
 		}else {
 		$result['error'] = "Unknown Pin";
 		break;
 		}
-		if ($_GET['pin']{1} > '7'){
-		$result['error'] = "Unknown Pin";
-		}else if ($_GET['pin']{2}) {
-		$result['error'] = "Unknown Pin";
-		}else {
-		$h = substr($silent, -2);
-		$decimal = hexdec($h);
-		$bin = sprintf( "%08d",decbin($decimal));
-		$bin = str_replace("0", "x", $bin);
-        $bin = str_replace("1", "0", $bin);
-        $bin = str_replace("x", "1", $bin);
 		$result['type'] = $_GET['pin']{0}.$_GET['pin']{1};
-		$result['state'] = $bin{(7-$_GET['pin']{1})};
-		}
 		break;
 	
 	case 'getsonde':
