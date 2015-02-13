@@ -25,15 +25,15 @@ $refreshpin = "refreshpin";
 $refreshpin = $dom->$refreshpin;
 ?>
 <div style="clear:both;margin-left:3%">
-	<span style="margin-top:0px;float:left;">Délai de mise à jour Status Pin (Page Accueil) &nbsp</span>
+	<span style="margin-top:0px;float:left;">Délai de mise à jour Status Pin (Page Accueil) &nbsp </span>
 	<input class="input" style="margin-top:0px;float:left;width:28px;" id="refreshpin" value="<?php echo $refreshpin; ?>"></input>
-	<span style="margin-top:0px;float:left;">&nbspSecondes</span>
+	<span style="margin-top:0px;float:left;">&nbsp Secondes</span>
 	<div style="color:white;width:40px;float:left;height:20px;padding:3px;padding-left:10px;" class="action" id="name" onclick="change('refreshpin')">Save
 	</div>
 </div>
 <div style="clear:both;margin-left:3%">
 <table class="tableaurelais">
-<tr><th>Nom</th><th>Pin</th><th>Type</th><th>Link</th></tr>
+<tr><th>Nom</th><th>Pin</th><th>Type</th><th>Inversé</th><th>Link</th></tr>
 <?php 
 $numpin = "NumberOfPin";
 $numpin = $dom->$numpin;
@@ -46,8 +46,13 @@ for($i = 0; $i <= $numpin; $i++){
 		$chaine = "pin".$letter.$i;
 		$chaine2 = "name".$letter.$i;
 		$chaine3 = "type".$letter.$i;
+		$chaineinvert = "invert".$letter.$i;
 		$pinname[$i] = $dom->$chaine2;
 		$pintype[$i] = $dom->$chaine3;
+		$pininvert[$i] = $dom->$chaineinvert;
+		if ($pininvert[$i] == 1) {
+		$invertchecked = 'checked';
+		}
 		$chaine4 = "link".$letter.$i;
 		$pinlinked = $dom->$chaine4;
 		$piecelinked = explode(";", $pinlinked);
@@ -79,6 +84,9 @@ for($i = 0; $i <= $numpin; $i++){
 		<option value="<?php echo $pinother2[$i]; ?>"><?php echo $pinother2[$i]; ?></option>
 	</select>
 	</td>
+	<td style="min-width:70px;width:5%;">
+	<input type="checkbox" id="invert<?php echo $letter.$i;?>" <?php echo $invertchecked;?> onchange="changeinvert('<?php echo $letter.$i;?>')">
+	</td>
 	<td style="min-width:600px;width:10%;">
 	<?php
 	if ($pintype[$i] != 'entree') { 
@@ -108,11 +116,11 @@ for($i = 0; $i <= $numpin; $i++){
 		$inputup = $inputxml->$inputpin->up;
 		$inputdown = $inputxml->$inputpin->down;
 		?>
-		<span style="float:left;clear:both;">Up : </span>
-		<input  style="margin-left:10px;width:480px;float:left;" id="inputup<?php echo $letter.$i;?>" value="<?php echo $inputup; ?>" class="input"></input>
-		<div style="margin-top:3px;width:40px;float:left;height:20px;padding:3px;float:right;" class="action" id="name" onclick="changeinput('<?php echo $letter.$i; ?>','up')">Save</div>
-		<span style="float:left;clear:both;">Down : </span>
-		<input style="margin-left:10px;width:458px;float:left;" id="inputdown<?php echo $letter.$i;?>" value="<?php echo $inputdown; ?>" class="input"></input>
+		<img style="float:left;width:50px;height:25px;clear:both;" src="images/0-1.png"></img><span style="float:left;">Up</span>
+		<input  style="margin-left:32px;width:415px;float:left;" id="inputup<?php echo $letter.$i;?>" value="<?php echo $inputup; ?>" class="input"></input>
+		<div class="action" style="margin-top:3px;margin-left:22px;width:40px;float:left;height:20px;padding:3px;float:right;" id="name" onclick="changeinput('<?php echo $letter.$i; ?>','up')">Save</div>
+		<img style="float:left;width:50px;height:25px;clear:both;" src="images/1-0.png"></img><span style="float:left;">Down</span>
+		<input style="margin-left:10px;width:415px;float:left;" id="inputdown<?php echo $letter.$i;?>" value="<?php echo $inputdown; ?>" class="input"></input>
 		<div style="margin-top:3px;width:40px;float:left;height:20px;padding:3px;float:right;" class="action" id="name" onclick="changeinput('<?php echo $letter.$i; ?>','down')">Save</div>
 		<?
 		}

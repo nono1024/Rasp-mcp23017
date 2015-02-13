@@ -1,23 +1,19 @@
-function changestate(pin,state){
+﻿function changestate(pin,states){
 	$.ajax({
 			type: "GET",
-			  url: "./global.php?action=cs&pin=" + pin + "&state=" + state,
+			  url: "./global.php?action=cs&pin=" + pin + "&state=" + states,
 			success: function(r){
 			var result = eval(r);
 				if(result.state == 1){
-				if (state != '1' || state != '0') {
-					var state = ($(document.getElementById("pin"+pin)).hasClass('on')?0:1);
-				}
-				
 					$(document.getElementById("pin"+pin)).removeClass('on');
 					$(document.getElementById("pin"+pin)).removeClass('off');
-					$(document.getElementById("pin"+pin)).addClass((state=='1'?'on':'off'));
+					$(document.getElementById("pin"+pin)).addClass((states=='1'?'on':'off'));
 					if (result.link) {
 					var link = (result.link).split(",");
 						for(var i=0;i<link.length;i++){
 						$(document.getElementById("pin"+link[i])).removeClass('on');
 						$(document.getElementById("pin"+link[i])).removeClass('off');
-						$(document.getElementById("pin"+link[i])).addClass((state=='1'?'on':'off'));
+						$(document.getElementById("pin"+link[i])).addClass((states=='1'?'on':'off'));
 						}
 					}				
 				}else{
@@ -51,9 +47,10 @@ operation = 'add';
 
 function changeinput(pin,type){
 	var url = document.getElementById('input'+ type + pin).value;
+	var uri = encodeURIComponent(url);
 	$.ajax({
 			type: "GET",
-			  url: "./global.php?action=changeinput&pin=" + pin + "&type=" + type +"&url=" + url,
+			  url: "./global.php?action=changeinput&mcppinpin=" + pin + "&mcptypetype=" + type +"&mcpurlurl=" + uri,
 			success: function(r){
 			
 		 }});
@@ -71,6 +68,21 @@ function changename(pin){
 
 function change(type){
 	var val = document.getElementById(type).value;
+	$.ajax({
+			type: "GET",
+			  url: "./global.php?action=change&type=" + type + "&val=" + val,
+			success: function(r){
+			
+		 }});
+}
+
+function changeinvert(pin){
+if (document.getElementById('invert'+pin).checked == true) {
+var val = 1;
+}else if (document.getElementById('invert'+pin).checked == false) {
+var val = 0;
+}
+var type = 'invert' + pin;
 	$.ajax({
 			type: "GET",
 			  url: "./global.php?action=change&type=" + type + "&val=" + val,
@@ -106,6 +118,19 @@ function savesondename(serial,name){
 			success: function(r){
 			
 		 }});
+}
+
+function razinput(pin){
+	var r = confirm("Remettre à 0 le compteur " + pin + " ?");
+	if (r == true) {
+		$.ajax({
+			type: "GET",
+			  url: "./global.php?action=razinput&pin=" + pin,
+			success: function(r){
+			document.getElementById("countpin" + pin).innerHTML= 0;
+		 }});
+	}
+	
 }
 
 

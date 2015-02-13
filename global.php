@@ -17,17 +17,40 @@ $numpin = $dom->$numpin;
 
 //lit le status des pin pour récupérer la mémoire des états
 	if ($dom) {	
+	$typa = "";
+	$typb = "";
 	for($i = numOfRegisterPins; $i >=  0; $i--){
 		$chaine = "pinA".$i;
+		$chaine2 = "invertA".$i;
+		$type = "typeA".$i;
+		$typepin = $dom->$type;
+		$typeA = "";
+		if ($typepin == 'entree') {
+		$typa = '1' . $typa;
+		}else{
+		$typa = '0' . $typa;
+		}
 		$GLOBALS['registerA'][$i] = $dom->pinstate->$chaine;
+		$GLOBALS['invertA'][$i] = $dom->$chaine2;
 	}
 	for($i = numOfRegisterPins; $i >=  0; $i--){
 		$chaine = "pinB".$i;
+		$chaine2 = "invertB".$i;
+		$type = "typeB".$i;
+		$typepin = $dom->$type;
+		if ($typepin == 'entree') {
+		$typb = '1' . $typb;
+		}else {
+		$typb = '0' . $typb;
+		}
 		$GLOBALS['registerB'][$i] = $dom->pinstate->$chaine;
+		$GLOBALS['invertB'][$i] = $dom->$chaine2;
 	}
 	}else {
 	echo "Erreur de fichier XML";
 	}
+$GLOBALS['typeA'] = sprintf( "%02d",dechex(bindec($typa)));
+$GLOBALS['typeB'] = sprintf( "%02d",dechex(bindec($typb)));
 $result['type'] = '';
 $result['state'] = '';
 $result['error'] = '';
@@ -137,6 +160,7 @@ switch($_GET['action']){
 	
 	//Change d'état avec état forcé ou non.
 	case 'cs':
+		if ($_GET['pin']{0} && $_GET['pin']{1}) {
 		//Récupère la Bank relais concerné
 		$base = $_GET['pin']{0};
 		//Récupère tout lien avec un autre relais
@@ -146,14 +170,15 @@ switch($_GET['action']){
 		$type = $dom->$chainetype;
 		//Récupère l'état avant modif du pin
 		$chaine = "pin".$_GET['pin'];
-
+		$status = $dom->pinstate->$chaine;
 		//Si on a un état forcé, on le force
+		if (isset($_GET['state'])) {
 		if ($_GET['state'] == '1') {
 		$status = 0;
 		}elseif ($_GET['state'] == '0') {
 		$status = 1;
 		}
-
+		}
 		//cas 'ON'
 		if ($status == 0) {	
 		//Si le relais est link à d'autre
@@ -177,7 +202,7 @@ switch($_GET['action']){
 		//met à jour la variable Pin
 		$GLOBALS['register'.$base][$_GET['pin']{1}] = 1;
 		//envoi la modif des pins
-		writeRegisters();
+		writeRegisters('Z');
 		//Save Xml
 		$dom->pinstate->$chaine = 1;
 		$dom->asXML("pin.xml");
@@ -229,15 +254,16 @@ switch($_GET['action']){
 			}		
 		}
 		//envoi la modif des pins
-		writeRegisters();
+		writeRegisters('Z');
 		//Save Xml
 		$dom->asXML("pin.xml");
-		
 		//Json result
 		$result['type'] = 'OFF' .$_GET['pin'] .  ' OK';
 		$result['state'] = 1;
 		}else {
 		$result = 'ERROR IN PARSING XML';
+		}}else {
+		$result = 'ERROR IN PIN';
 		}
 	break;
 	
@@ -380,13 +406,15 @@ switch($_GET['action']){
 		$chaine = "pin".$_GET['pin'];
 		$status = $dom->pinstate->$chaine;
 		//Si on a un état forcé, on le force
+		if (isset($_GET['state'])) {
 		if ($_GET['state'] == '1') {
 		$status = 0;
 		}elseif ($_GET['state'] == '0') {
 		$status = 1;
 		}
+		}
 		//Si on a un temps forcé, on le force
-		if ($_GET['time']) {
+		if (isset($_GET['time'])) {
 		$time = $_GET['time'];
 		}else {
 		//Sinon ça sera 1s
@@ -413,6 +441,41 @@ switch($_GET['action']){
 			}
 	break;
 	
+	case 'input':
+		$xml = simplexml_load_file('pin.xml');
+		$chaine = "pin".$_GET['pin'];
+		$xml->pinstate->$chaine = $_GET['state'];
+		$xml->asXML("pin.xml");
+		if ($_GET['state'] == '1') {
+		$input = simplexml_load_file('input.xml');
+		$count = $input->$_GET['pin']->compteur;
+		$count = $count + 1;
+		$input->$_GET['pin']->compteur = $count;
+		$input->asXML("input.xml");
+		}
+		$result['state'] = 1;
+		$result['type'] = 'INPUT' .$_GET['pin'] .  ' PUT to '.$_GET['state'].' OK';
+	break;
+	
+	case 'pidstop':
+		$silent = exec('ps aux | grep routine.php',$out);
+		foreach ($out as $pout) {
+		if (preg_match("#/var/www/routine.php#i", $pout)) {
+		$arr = preg_split('/[\s]+/', $pout);
+		$cmd = 'kill -9 '. $arr[1];
+		$silent = exec($cmd);
+		}
+		}
+		$result['state'] = 1;
+		$result['type'] = 'Process Stopped';
+	break;
+	
+	case 'pidlaunch':
+		$silent = exec('/usr/bin/php /var/www/routine.php &',$out);
+		$result['state'] = 1;
+		$result['type'] = 'Process Started';
+	break;
+	
 	case 'savesonde':
 		$xml = simplexml_load_file('conf.xml');
 		$sonde = $xml->addChild('sonde');
@@ -420,6 +483,12 @@ switch($_GET['action']){
 		$name = $sonde->addChild('serial', $_GET['serial']);
 		$name = $sonde->addChild('familyid', $_GET['familyid']);
 		$xml->asXML("conf.xml");
+	break;
+	
+	case 'razinput':
+		$inputxml = simplexml_load_file('input.xml');
+		$inputxml->$_GET['pin']->compteur = '0'; 
+		$inputxml->asXML("input.xml");
 	break;
 		
 	case 'savesondename':
@@ -434,7 +503,8 @@ switch($_GET['action']){
 	
 	case 'changeinput':
 		$xml = simplexml_load_file('input.xml');
-		$xml->$_GET['pin']->$_GET['type'] = $_GET['url'];
+		$url = rawurldecode($_GET['mcpurlurl']);
+		$xml->$_GET['mcppinpin']->$_GET['mcptypetype'] = $url;
 		$xml->asXML("input.xml");
 	break;
 	
@@ -460,14 +530,14 @@ switch($_GET['action']){
 echo '('.json_encode($result).')';
  
 function writeRegisters($base){
-command("/usr/sbin/i2cset -y 1 0x20 0x00 0x00");
-command("/usr/sbin/i2cset -y 1 0x20 0x01 0x00");
+command("/usr/sbin/i2cset -y 1 0x20 0x00 0x".$GLOBALS['typeA']);
+command("/usr/sbin/i2cset -y 1 0x20 0x01 0x".$GLOBALS['typeB']);
 
 	if ($base == 'A'){
 		$val ="";
 			for($i = 0 ; $i <=  7; $i++){
 			$mask = bindec('1');
-			$pininverse = $GLOBALS['registerA'][$i] ^ $mask;
+			$pininverse = $GLOBALS['registerA'][$i] ^ $GLOBALS['invertA'][$i];
 			$val = $pininverse . $val;
 			}
 		$hexA = dechex(bindec($val));
@@ -476,7 +546,7 @@ command("/usr/sbin/i2cset -y 1 0x20 0x01 0x00");
 		$val ="";
 			for($i = 0 ; $i <=  7; $i++){
 			$mask = bindec('1');
-			$pininverse = $GLOBALS['registerB'][$i] ^ $mask;
+			$pininverse = $GLOBALS['registerB'][$i] ^ $GLOBALS['invertB'][$i];
 			$val = $pininverse . $val;
 			}
 		$hexB = dechex(bindec($val));
@@ -485,7 +555,7 @@ command("/usr/sbin/i2cset -y 1 0x20 0x01 0x00");
 		$val ="";
 			for($i = 0 ; $i <=  7; $i++){
 			$mask = bindec('1');
-			$pininverse = $GLOBALS['registerA'][$i] ^ $mask;
+			$pininverse = $GLOBALS['registerA'][$i] ^ $GLOBALS['invertA'][$i];
 			$val = $pininverse . $val;
 			}
 		$hexA = dechex(bindec($val));
@@ -493,12 +563,12 @@ command("/usr/sbin/i2cset -y 1 0x20 0x01 0x00");
 		$val ="";
 			for($i = 0 ; $i <=  7; $i++){
 			$mask = bindec('1');
-			$pininverse = $GLOBALS['registerB'][$i] ^ $mask;
+			$pininverse = $GLOBALS['registerB'][$i] ^ $GLOBALS['invertB'][$i];
 			$val = $pininverse . $val;
 			}
 		$hexB = dechex(bindec($val));
 		command("/usr/sbin/i2cset -y 1 0x20 0x15 0x".$hexB);
-	}
+}
 
 }
 
@@ -519,7 +589,6 @@ function command($command){
 function demo(){
 	command("/usr/sbin/i2cset -y 1 0x20 0x00 0x00");
 	command("/usr/sbin/i2cset -y 1 0x20 0x01 0x00");
-
 	command("/usr/sbin/i2cset -y 1 0x20 0x15 0xFF");
 	command("/usr/sbin/i2cset -y 1 0x20 0x15 0xEE");
 	command("/usr/sbin/i2cset -y 1 0x20 0x15 0xBB");

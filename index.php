@@ -60,6 +60,46 @@ xhr1.send(null);
 setTimeout(function(){polltemp(sonde)},15000);
 }
 
+function pollpid() {
+
+var xhr1 = getXMLHttpRequest();
+
+xhr1.onreadystatechange = function() {
+        if (xhr1.readyState == 4 && (xhr1.status == 200 || xhr1.status == 0)) {
+        var result = eval(xhr1.responseText);
+		if (result[0] == 'NOK') {
+		document.getElementById('spanpid').innerHTML=' Processus vérification entrées/sorties arrêté';
+		document.getElementById('imgpid').src = 'images/NOK.png';
+		document.getElementById('actionpid').innerHTML='Lancer';
+		}else {
+		document.getElementById('spanpid').innerHTML=' Processus vérification entrées/sorties lancé PID: '+result[0] + ' Ressource Processeur: '+result[1]+'%';
+		document.getElementById('imgpid').src = 'images/OK.png';
+		document.getElementById('actionpid').innerHTML='Arrêter';
+		}
+		}};
+
+xhr1.open("GET", "scripts/poll-pid.php", true);
+xhr1.send(null);
+
+setTimeout(function(){pollpid()},15000);
+}
+
+function launchpid() {
+
+var xhr1 = getXMLHttpRequest();
+var test = document.getElementById('actionpid').innerHTML;
+if (test == 'Lancer') {
+var action = 'pidlaunch';
+}else if (test == 'Arrêter') {
+var action = 'pidstop';
+}
+
+xhr1.open("GET", "global.php?action="+action, true);
+xhr1.send(null);
+
+setTimeout(function(){pollpid()},1000);
+}
+
 </script>
 
 <?php
@@ -67,7 +107,7 @@ $xml = simplexml_load_file('conf.xml');
 if ($xml) {
 	
 	if ($xml->sonde) {
-	echo "<body onLoad=\"pollpin();";
+	echo "<body onLoad=\"pollpin();pollpid();";
 		foreach ($xml->sonde as $xmlsonde){
 			echo "polltemp('" . $xmlsonde->serial . "');";
 		}
@@ -98,7 +138,7 @@ echo "Température ". $xmlsonde->name . " : <span id=" . $xmlsonde->serial . "><
 <?
 	}else {
 ?>
-<body onLoad="pollpin();">
+<body onLoad="pollpin();pollpid();">
 <?php
 $page = 'Accueil';
 include("menu.php" );
@@ -107,7 +147,11 @@ include("menu.php" );
 <?
 	}
 }
+
 ?>
+<img id="imgpid" style="float:left;width:20px;height:20px;" src="">
+<span id="spanpid" style="margin-left:10px;float:left;"></span>
+<div id="divpid" class="action" style="color:white;height:20px;padding:3px;min-width:55px;width:55px;float:left;" onclick="launchpid()"><span id="actionpid"></span></div>
 
 <table style="width:30%;clear:both;float:left;" class="tableaurelais">
 <tr><th>Equipements</th><th>Actions</th><th>Equipements</th><th>Actions</th></tr>
@@ -134,7 +178,7 @@ for($i = 0; $i <= $numpin; $i++){
 	<?php if ($pintype[$i] == 'fugitif') {?>
 	<td style="min-width:140px;width:10%;" ><div class="action" style="min-width:100px;width:100px;float:left;" id="fugitif" onclick="fugitif('<?php echo $letter.$i; ?>')"><span>Actionner</span></div></td>
 	<?php }elseif ($pintype[$i] == 'onoff') {?>
-	<td style="min-width:180px;width:10%;" >
+	<td style="min-width:220px;width:10%;" >
 	<div class="action" id="on" onclick="changestate('<?php echo $letter.$i; ?>',1)">
 			<span>On</span>
 		</div>
@@ -143,9 +187,16 @@ for($i = 0; $i <= $numpin; $i++){
 		</div>
 	</td>
 	
-<?php }elseif ($pintype[$i] == 'entree') {?>
-	<td style="min-width:180px;width:10%;" >
-	<span><-- Status</span>
+<?php }elseif ($pintype[$i] == 'entree') {
+		$inputxml = simplexml_load_file('input.xml');
+		if ($inputxml) {
+		$inputpin = $letter.$i;
+		$countpin = $inputxml->$inputpin->compteur;
+		}
+?>
+	<td style="min-width:220px;width:10%;">
+	<span style="float:left;margin-left:7px;margin-top:2px;">Compteur :</span><span id="countpin<?php echo $inputpin; ?>" style="float:left;margin-left:7px;margin-top:2px;"><?php echo $countpin;?></span>
+	<div class="action" style="min-width:25px;width:25px;float:right;" id="razinput" onclick="razinput('<?php echo $letter.$i; ?>')"><span>RAZ</span></div>
 	</td>
 	
 <?php }
@@ -162,7 +213,7 @@ $i++;
 	<?php if ($pintype[$i] == 'fugitif') {?>
 	<td style="min-width:140px;width:10%;" ><div class="action" style="min-width:100px;width:100px;float:left;" id="fugitif" onclick="fugitif('<?php echo $letter.$i; ?>')"><span>Actionner</span></div></td></tr>
 	<?php }elseif ($pintype[$i] == 'onoff') {?>
-	<td style="min-width:180px;width:10%;" >
+	<td style="min-width:220px;width:10%;" >
 	<div class="action" id="on" onclick="changestate('<?php echo $letter.$i; ?>',1)">
 			<span>On</span>
 		</div>
@@ -170,7 +221,21 @@ $i++;
 			<span>Off</span>
 		</div>
 	</td>
-	<?php }}}
+	<?php }elseif ($pintype[$i] == 'entree') {
+		$inputxml = simplexml_load_file('input.xml');
+		if ($inputxml) {
+		$inputpin = $letter.$i;
+		$countpin = $inputxml->$inputpin->compteur;
+		}
+?>
+	<td style="min-width:220px;width:10%;">
+	<span style="float:left;margin-left:7px;margin-top:2px;">Compteur :</span><span id="countpin<?php echo $inputpin; ?>" style="float:left;margin-left:7px;margin-top:2px;"><?php echo $countpin;?></span>
+	<div class="action" style="min-width:25px;width:25px;float:right;" id="razinput" onclick="razinput('<?php echo $letter.$i; ?>')"><span>RAZ</span></div>
+	</td>
+	
+<?php }
+	
+	}}
 }else {
 	echo "Erreur de fichier XML";
 	}
