@@ -149,7 +149,7 @@ include("menu.php" );
 }
 
 ?>
-<img id="imgpid" style="float:left;width:20px;height:20px;" src="">
+<img id="imgpid" style="float:left;width:20px;height:20px;" src="images/loading.gif">
 <span id="spanpid" style="margin-left:10px;float:left;"></span>
 <div id="divpid" class="action" style="color:white;height:20px;padding:3px;min-width:55px;width:55px;float:left;" onclick="launchpid()"><span id="actionpid"></span></div>
 
