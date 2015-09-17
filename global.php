@@ -160,7 +160,7 @@ switch($_GET['action']){
 	
 	//Change d'état avec état forcé ou non.
 	case 'cs':
-		if ($_GET['pin']{0} && $_GET['pin']{1}) {
+		if (isset($_GET['pin']{0}) && isset($_GET['pin']{1})) {
 		//Récupère la Bank relais concerné
 		$base = $_GET['pin']{0};
 		//Récupère tout lien avec un autre relais
