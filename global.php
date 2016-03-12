@@ -281,8 +281,6 @@ switch($_GET['action']){
 		writeRegisters('Z');
 		//Save Xml
 		$dom->asXML("pin.xml");
-		flock($testlock, LOCK_UN); // release the lock
-		fclose($testlock);
 		//Json result
 		$result['type'] = 'OFF' .$piecepin .  ' OK';
 		$result['state'] = 1;
@@ -293,6 +291,8 @@ switch($_GET['action']){
 		}
 		$count++;
 		}
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 	break;
 	
 	case 'changetype':
