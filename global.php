@@ -230,6 +230,8 @@ switch($_GET['action']){
 		//Save Xml
 		$dom->pinstate->$chaine = 1;
 		$dom->asXML("pin.xml");
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		//Json result
 		$result['type'] = 'ON' .$piecepin .  ' OK';
 		$result['state'] = 1;
@@ -281,6 +283,8 @@ switch($_GET['action']){
 		writeRegisters('Z');
 		//Save Xml
 		$dom->asXML("pin.xml");
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		//Json result
 		$result['type'] = 'OFF' .$piecepin .  ' OK';
 		$result['state'] = 1;
@@ -297,6 +301,8 @@ switch($_GET['action']){
 		$chaine = "type".$_GET['pin'];
 		$dom->$chaine = $_GET['type'];
 		$dom->asXML("pin.xml");
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		$result['type'] = 'type' .$_GET['pin'] .  ' set to '.$_GET['type'];
 		$result['state'] = 1;
 	break;
@@ -309,6 +315,8 @@ switch($_GET['action']){
 		$dom->$chaine = $dom->$chaine . $_GET['linked'] . ";";
 		$dom->$chainelinked = $dom->$chainelinked . $_GET['pin'] . ";";
 		$dom->asXML("pin.xml");
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		$result['type'] = 'linkpin' .$_GET['pin'] .  ' added '.$_GET['linked'] . ' to ' . $dom->$chaine;
 		$result['state'] = 1;
 		}elseif ($_GET['operation'] == 'remove'){
@@ -332,6 +340,8 @@ switch($_GET['action']){
 			}
 		$dom->$chainelinked = $linkedcomplet;
 		$dom->asXML("pin.xml");
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		$result['type'] = 'link' .$_GET['pin'] .  ' removed '.$_GET['linked'] . ' from ' . $dom->$chaine2;
 		$result['state'] = 1;
 		}
@@ -341,6 +351,8 @@ switch($_GET['action']){
 		$chaine = "name".$_GET['pin'];
 		$dom->$chaine = $_GET['name'];
 		$dom->asXML("pin.xml");
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		$result['type'] = 'name' .$_GET['pin'] .  ' set to '.$_GET['name'];
 		$result['state'] = 1;
 		break;
@@ -349,6 +361,8 @@ switch($_GET['action']){
 		$type = $_GET['type'];
 		$dom->$type = $_GET['val'];
 		$dom->asXML("pin.xml");
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		$result['type'] = 'type' .$_GET['type'] .  ' set to '.$_GET['val'];
 		$result['state'] = 1;
 		break;
