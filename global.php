@@ -1,6 +1,18 @@
 <?php
 //charge le fichier XML
-$dom = simplexml_load_file('pin.xml');
+
+$testlock = fopen("lock.txt", "w+");
+$A = 0;
+while ($A < 20) {
+$testlock = fopen("lock.txt", "w+");	
+if (flock($testlock, LOCK_EX)) { // do an exclusive lock
+	$dom = simplexml_load_file('pin.xml');
+	$A = 20;
+} else {
+    sleep(1);
+	$A++;
+}
+}
 //Récupère le nombre de pin
 $numpin = "NumberOfPin";
 $numpin = $dom->$numpin;
@@ -73,6 +85,8 @@ switch($_GET['action']){
 		writeRegisters();
 		//Ré-enregistre le xml
 		$dom->asXML("pin.xml"); 
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		//Retour Json
 		$result['type'] = 'Init OK';
 		$result['state'] = 1;
@@ -97,6 +111,8 @@ switch($_GET['action']){
 		demo();
 		//Enregistre le xml
 		$dom->asXML("pin.xml"); 
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		//Retour JSON
 		$result['type'] = 'Clear OK';
 		$result['state'] = 1;
@@ -120,6 +136,8 @@ switch($_GET['action']){
 		writeRegisters();
 		//Enregistre le xml
 		$dom->asXML("pin.xml"); 
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		//Retour JSON
 		$result['type'] = 'Clear OK';
 		$result['state'] = 1;
@@ -137,6 +155,8 @@ switch($_GET['action']){
 		writeRegisters('A');
 		//Enregistre le xml
 		$dom->asXML("pin.xml"); 
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		$result['type'] = 'ClearA OK';
 		$result['state'] = 1;
 	break;
@@ -153,6 +173,8 @@ switch($_GET['action']){
 		writeRegisters('B');
 		//Enregistre le xml
 		$dom->asXML("pin.xml"); 
+		flock($testlock, LOCK_UN); // release the lock
+		fclose($testlock);
 		//Retour JSON
 		$result['type'] = 'ClearB OK';
 		$result['state'] = 1;
@@ -160,24 +182,26 @@ switch($_GET['action']){
 	
 	//Change d'état avec état forcé ou non.
 	case 'cs':
-		if ($_GET['pin']{0} && $_GET['pin']{1}) {
+		$allpin = explode(";", $_GET['pin']);
+		$allstate = explode(";", $_GET['state']);
+		$count=0;
+		foreach ($allpin as $piecepin) {
+		if (isset($piecepin{0}) && isset($piecepin{1})) {
 		//Récupère la Bank relais concerné
-		$base = $_GET['pin']{0};
+		$base = $piecepin{0};
 		//Récupère tout lien avec un autre relais
-		$chainelink = "link".$_GET['pin'];
+		$chainelink = "link".$piecepin;
 		$link = $dom->$chainelink;
-		$chainetype = "type".$_GET['pin'];
+		$chainetype = "type".$piecepin;
 		$type = $dom->$chainetype;
 		//Récupère l'état avant modif du pin
-		$chaine = "pin".$_GET['pin'];
+		$chaine = "pin".$piecepin;
 		$status = $dom->pinstate->$chaine;
 		//Si on a un état forcé, on le force
-		if (isset($_GET['state'])) {
-		if ($_GET['state'] == '1') {
+		if ($allstate[$count] == '1') {
 		$status = 0;
-		}elseif ($_GET['state'] == '0') {
+		}elseif ($allstate[$count] == '0') {
 		$status = 1;
-		}
 		}
 		//cas 'ON'
 		if ($status == 0) {	
@@ -200,20 +224,20 @@ switch($_GET['action']){
 			}		
 		}
 		//met à jour la variable Pin
-		$GLOBALS['register'.$base][$_GET['pin']{1}] = 1;
+		$GLOBALS['register'.$base][$piecepin{1}] = 1;
 		//envoi la modif des pins
 		writeRegisters('Z');
 		//Save Xml
 		$dom->pinstate->$chaine = 1;
 		$dom->asXML("pin.xml");
 		//Json result
-		$result['type'] = 'ON' .$_GET['pin'] .  ' OK';
+		$result['type'] = 'ON' .$piecepin .  ' OK';
 		$result['state'] = 1;
 		
 		//CAS OFF
 		}elseif ($status == 1) {
 		//met à jour la variable Pin
-		$GLOBALS['register'.$_GET['pin']{0}][$_GET['pin']{1}] = 0;
+		$GLOBALS['register'.$piecepin{0}][$piecepin{1}] = 0;
 		$dom->pinstate->$chaine = 0;
 		if ($link) {
 		$result['link'] = "";
@@ -231,7 +255,7 @@ switch($_GET['action']){
 				$piecelinked = array_filter( explode(";", $linked));
 					//Pour chaque linked
 					foreach ($piecelinked as $piece2) {
-					if ($piece2 != $_GET['pin'] && $piece2) {
+					if ($piece2 != $piecepin && $piece2) {
 						//on regarde leur status
 						$chainestatuslinked = "pin".$piece2;
 						$statuslinked = $dom->pinstate->$chainestatuslinked;
@@ -258,12 +282,14 @@ switch($_GET['action']){
 		//Save Xml
 		$dom->asXML("pin.xml");
 		//Json result
-		$result['type'] = 'OFF' .$_GET['pin'] .  ' OK';
+		$result['type'] = 'OFF' .$piecepin .  ' OK';
 		$result['state'] = 1;
 		}else {
 		$result = 'ERROR IN PARSING XML';
 		}}else {
 		$result = 'ERROR IN PIN';
+		}
+		$count++;
 		}
 	break;
 	
