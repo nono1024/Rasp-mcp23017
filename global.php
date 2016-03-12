@@ -230,8 +230,6 @@ switch($_GET['action']){
 		//Save Xml
 		$dom->pinstate->$chaine = 1;
 		$dom->asXML("pin.xml");
-		flock($testlock, LOCK_UN); // release the lock
-		fclose($testlock);
 		//Json result
 		$result['type'] = 'ON' .$piecepin .  ' OK';
 		$result['state'] = 1;
