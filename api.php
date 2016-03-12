@@ -121,6 +121,7 @@ include("menu.php" );
 	<td style="font-size:10px;line-height:1.1;text-align:left;">
 		Permet de faire changer l'état d'un PIN, en précisant ou non son état futur.
 		Ce ChangeState prend en compte les Pin "Linkés" qui seront automatiquement modifié. 	
+		Possibilité de faire des changements multiples en une seul url.
 	</td>
 	<td style="text-align:left;">
 		/global.php?action=cs&pin=x[&state=y]
@@ -131,6 +132,7 @@ include("menu.php" );
 	</td>
 	<td style="text-align:left;">
 		http://<?echo $_SERVER['SERVER_ADDR'];?>/global.php?action=cs&pin=A1&state=1
+		http://<?echo $_SERVER['SERVER_ADDR'];?>/global.php?action=cs&pin=A2;A3&state=1;0
 	</td>	
 </tr>
 
