@@ -182,15 +182,11 @@ switch($_GET['action']){
 	
 	//Change d'état avec état forcé ou non.
 	case 'cs':
-<<<<<<< HEAD
 		$allpin = explode(";", $_GET['pin']);
 		$allstate = explode(";", $_GET['state']);
 		$count=0;
 		foreach ($allpin as $piecepin) {
 		if (isset($piecepin{0}) && isset($piecepin{1})) {
-=======
-		if (isset($_GET['pin']{0}) && isset($_GET['pin']{1})) {
->>>>>>> origin/master
 		//Récupère la Bank relais concerné
 		$base = $piecepin{0};
 		//Récupère tout lien avec un autre relais
